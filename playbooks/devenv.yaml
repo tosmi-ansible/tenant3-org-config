@@ -2,6 +2,13 @@
   hosts: localhost
   gather_facts: false
   tasks:
+
+    - name: Print message if awx_webhook_payload is not defined
+      ansible.builtin.debug:
+        msg: "awx_webhook_payload is not defined"
+      when: awx_webhook_payload is not defined
+
     - name: Print data received via webhook
       ansible.builtin.debug:
         msg: "Received data: {{ awx_webhook_payload }}"
+      when: awx_webhook_payload is defined
