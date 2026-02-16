@@ -12,3 +12,17 @@
       ansible.builtin.debug:
         var: awx_webhook_payload
       when: awx_webhook_payload is defined
+
+    - name: Print required data
+      ansible.builtin.debug:
+        msg:
+          - "before: {{ awx_webhook_payload.before }}"
+          - "created: {{ awx_webhook_payload.created }}"
+
+    - name: Identify push event
+      ansible.builtin.debug:
+        msg: "new branch: {{ awx_webhook_payload.ref }}"
+      when:
+        - awx_webhook_payload is defined
+        - awx_webhook_payload.before == "0000000000000000000000000000000000000000"
+        - awx_webhook_payload.created
