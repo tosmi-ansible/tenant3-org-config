@@ -8,3 +8,11 @@ controller_templates:
     project: "02-{{ tenant_name }}-example-project"
     playbook: playbooks/hello-world.yaml
     verbosity: 2
+  - name: "02-tenant4-example-job-template"
+    organization: "{{ tenant_name }}"
+    description: Prints Hello World
+    job_type: run
+    inventory: "02-{{ tenant_name }}-example-inventory"
+    project: "02-{{ tenant_name }}-example-project"
+    playbook: playbooks/hello-world.yaml
+    verbosity: 2
