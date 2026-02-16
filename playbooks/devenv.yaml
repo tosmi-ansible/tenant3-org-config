@@ -1,6 +1,21 @@
-- name: Test webhook
+- name: Create/Delete development environment based on Git branch events
   hosts: localhost
   gather_facts: false
+  vars:
+    tenant_name: "acme-corp"
+    # awx_webhook_payload:
+    #   before: "0000000000000000000000000000000000000000"
+    #   after: "abcdef1234567890abcdef1234567890abcdef12"
+    #   created: true
+    #   deleted: false
+    #   ref: "refs/heads/feature/new-feature-branch"
+
+    # awx_webhook_payload:
+    #   after: "0000000000000000000000000000000000000000"
+    #   before: "abcdef1234567890abcdef1234567890abcdef12"
+    #   created: false
+    #   deleted: true
+    #   ref: "refs/heads/feature/new-feature-branch"
   tasks:
 
     - name: Print message if awx_webhook_payload is not defined
@@ -20,14 +35,85 @@
           - "after: {{ awx_webhook_payload.after }}"
           - "created: {{ awx_webhook_payload.created }}"
           - "deleted: {{ awx_webhook_payload.deleted }}"
+          - "ref: {{ awx_webhook_payload.ref }}"
 
-    - name: Identify create branch event
-      ansible.builtin.debug:
-        msg: "new branch: {{ awx_webhook_payload.ref }}"
+    - name: Remove refs/head from the branch name and convert slashes to dashes
+      ansible.builtin.set_fact:
+        split_branch_name: "{{ awx_webhook_payload.ref.split('/')[2:] | join('-') }}"
+        #
+        # We re-use the AAP API key credential type
+        # This should be a separate credential type for Kubernetes API key in a real implementation
+        #
+        k8s_api_key: "{{ lookup('env', 'AAP_API_KEY') }}"
+
+    - name: Create dev environment for new branch
       when:
         - awx_webhook_payload is defined
         - awx_webhook_payload.before == "0000000000000000000000000000000000000000"
         - awx_webhook_payload.created
+      block:
+        - name: Identify new branch event
+          ansible.builtin.debug:
+            msg: "new branch: {{ awx_webhook_payload.ref }}"
+
+        - name: Create a new namspace for the development environment
+          kubernetes.core.k8s:
+            definition: "{{ lookup('template', '../templates/k8s-namespace.yaml.j2') }}"
+            state: present
+            host: "https://api.hetzner.tntinfra.net:6443"
+            verify_ssl: false
+            api_key: "{{ k8s_api_key }}"
+
+        - name: Create a new VM in namespace
+          kubernetes.core.k8s:
+            definition: "{{ lookup('template', '../templates/k8s-vm.yaml.j2') }}"
+            state: present
+            host: "https://api.hetzner.tntinfra.net:6443"
+            verify_ssl: false
+            api_key: "{{ k8s_api_key }}"
+
+        - name: Create a new NodePort service for the VM
+          kubernetes.core.k8s:
+            definition: "{{ lookup('template', '../templates/k8s-service.yaml.j2') }}"
+            state: present
+            host: "https://api.hetzner.tntinfra.net:6443"
+            verify_ssl: false
+            api_key: "{{ k8s_api_key }}"
+
+    - name: Delete dev environment for deleted branch
+      when:
+        - awx_webhook_payload is defined
+        - awx_webhook_payload.after == "0000000000000000000000000000000000000000"
+        - awx_webhook_payload.deleted
+      block:
+        - name: Identify delete branch event
+          ansible.builtin.debug:
+            msg: "deleted: {{ awx_webhook_payload.ref }}"
+
+        - name: Delete the VM in namespace
+          kubernetes.core.k8s:
+            definition: "{{ lookup('template', '../templates/k8s-vm.yaml.j2') }}"
+            state: absent
+            host: "https://api.hetzner.tntinfra.net:6443"
+            verify_ssl: false
+            api_key: sha256~SAwCVe2EMluE-c4Mtt4mA55lY2SNVTzMIcH47o9fxBE
+
+        - name: Delete the NodePort service for the VM
+          kubernetes.core.k8s:
+            definition: "{{ lookup('template', '../templates/k8s-service.yaml.j2') }}"
+            state: absent
+            host: "https://api.hetzner.tntinfra.net:6443"
+            verify_ssl: false
+            api_key: sha256~SAwCVe2EMluE-c4Mtt4mA55lY2SNVTzMIcH47o9fxBE
+
+        - name: Delete the namespace for the development environment
+          kubernetes.core.k8s:
+            definition: "{{ lookup('template', '../templates/k8s-namespace.yaml.j2') }}"
+            state: absent
+            host: "https://api.hetzner.tntinfra.net:6443"
+            verify_ssl: false
+            api_key: sha256~SAwCVe2EMluE-c4Mtt4mA55lY2SNVTzMIcH47o9fxBE
+            # api_key: "{{ lookup('env', 'K8S_API_KEY') }}"
 
     - name: Identify delete branch event
       ansible.builtin.debug:

@@ -1,13 +1,13 @@
 ---
 controller_inventories:
-  - name: "02-{{ tenant_name }}-example-inventory"
+  - name: "00-{{ tenant_name }}-example-inventory"
     organization: "{{ tenant_name }}"
 
 controller_inventory_sources:
-  - name: "02-{{ tenant_name }}-example-inventory-source"
-    inventory: "02-{{ tenant_name }}-example-inventory"
+  - name: "00-{{ tenant_name }}-example-inventory-source"
+    inventory: "00-{{ tenant_name }}-example-inventory"
     source: scm
-    source_project: "02-{{ tenant_name }}-example-project"
+    source_project: "00-{{ tenant_name }}-example-project"
     source_path: inventory/inventory.yaml
     organization: "{{ tenant_name }}"
     update_on_launch: true

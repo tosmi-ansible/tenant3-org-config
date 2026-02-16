@@ -1,18 +1,18 @@
 ---
 controller_templates:
-  - name: "02-{{ tenant_name }}-example-job-template"
+  - name: "00-{{ tenant_name }}-example-job-template"
     organization: "{{ tenant_name }}"
     description: Prints Hello World
     job_type: run
-    inventory: "02-{{ tenant_name }}-example-inventory"
-    project: "02-{{ tenant_name }}-example-project"
+    inventory: "00-{{ tenant_name }}-example-inventory"
+    project: "00-{{ tenant_name }}-example-project"
     playbook: playbooks/hello-world.yaml
     verbosity: 2
-  - name: "02-tenant4-example-job-template"
+  - name: "00-tenant3-ping"
     organization: "{{ tenant_name }}"
-    description: Prints Hello World
+    description: Ping hosts
     job_type: run
-    inventory: "02-{{ tenant_name }}-example-inventory"
-    project: "02-{{ tenant_name }}-example-project"
-    playbook: playbooks/hello-world.yaml
+    inventory: "00-{{ tenant_name }}-example-inventory"
+    project: "00-{{ tenant_name }}-example-project"
+    playbook: playbooks/ping.yaml
     verbosity: 2

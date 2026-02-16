@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    tenant: "{{ tenant_name }}"
+    branch: "{{ split_branch_name }}"
+  name: "{{ tenant_name}}-{{ split_branch_name }}"
