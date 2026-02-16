@@ -10,5 +10,5 @@
 
     - name: Print data received via webhook
       ansible.builtin.debug:
-        msg: "Received data: {{ awx_webhook_payload }}"
+        var: "{{ awx_webhook_payload }}"
       when: awx_webhook_payload is defined
