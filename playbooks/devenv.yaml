@@ -17,12 +17,22 @@
       ansible.builtin.debug:
         msg:
           - "before: {{ awx_webhook_payload.before }}"
+          - "after: {{ awx_webhook_payload.after }}"
           - "created: {{ awx_webhook_payload.created }}"
+          - "deleted: {{ awx_webhook_payload.deleted }}"
 
-    - name: Identify push event
+    - name: Identify create branch event
       ansible.builtin.debug:
         msg: "new branch: {{ awx_webhook_payload.ref }}"
       when:
         - awx_webhook_payload is defined
         - awx_webhook_payload.before == "0000000000000000000000000000000000000000"
         - awx_webhook_payload.created
+
+    - name: Identify delete branch event
+      ansible.builtin.debug:
+        msg: "deleted branch: {{ awx_webhook_payload.ref }}"
+      when:
+        - awx_webhook_payload is defined
+        - awx_webhook_payload.after == "0000000000000000000000000000000000000000"
+        - awx_webhook_payload.deleted
