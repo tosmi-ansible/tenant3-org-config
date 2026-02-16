@@ -1,0 +1,85 @@
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  labels:
+    app: rhel10
+  name: rhel10
+  namespace: "{{ tenant_name}}-{{ split_branch_name }}"
+spec:
+  dataVolumeTemplates:
+  - apiVersion: cdi.kubevirt.io/v1beta1
+    kind: DataVolume
+    metadata:
+      name: rhel10
+    spec:
+      source:
+        pvc:
+          name: rhel10-amd64-c03936a065f2
+          namespace: openshift-virtualization-os-images
+      storage:
+        resources:
+          requests:
+            storage: "32212254720"
+  runStrategy: RerunOnFailure
+  template:
+    metadata:
+      annotations:
+        vm.kubevirt.io/flavor: small
+        vm.kubevirt.io/os: rhel10
+        vm.kubevirt.io/workload: server
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: rhel10
+        kubevirt.io/domain: rhel10
+        kubevirt.io/size: small
+        network.kubevirt.io/headlessService: headless
+    spec:
+      architecture: amd64
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: rootdisk
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
+          interfaces:
+          - masquerade: {}
+            model: virtio
+            name: default
+          rng: {}
+        features:
+          acpi: {}
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+            efi: {}
+        machine:
+          type: pc-q35-rhel9.6.0
+        memory:
+          guest: 2Gi
+        resources: {}
+      networks:
+      - name: default
+        pod: {}
+      terminationGracePeriodSeconds: 180
+      volumes:
+      - dataVolume:
+          name: rhel10
+        name: rootdisk
+      - cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            user: cloud-user
+            chpasswd:
+              expire: False
+            ssh_authorized_keys:
+              - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPtExD4caiXPzBx+yRXGcx5h9sRY9yC/HgkoJAdzWshs
+        name: cloudinitdisk
