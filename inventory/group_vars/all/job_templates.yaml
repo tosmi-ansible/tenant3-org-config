@@ -15,4 +15,5 @@ controller_templates:
     inventory: "00-{{ tenant_name }}-example-inventory"
     project: "00-{{ tenant_name }}-example-project"
     playbook: playbooks/ping.yaml
+    ask_limit_on_launch: true
     verbosity: 2
