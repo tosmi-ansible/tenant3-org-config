@@ -46,6 +46,10 @@
         #
         k8s_api_key: "{{ lookup('env', 'AAP_API_KEY') }}"
 
+    - name: Print the k8s_api_key for debugging purposes
+      ansible.builtin.debug:
+        msg: "k8s_api_key: {{ k8s_api_key }}"
+
     - name: Create dev environment for new branch
       when:
         - awx_webhook_payload is defined
@@ -96,7 +100,7 @@
             state: absent
             host: "https://api.hetzner.tntinfra.net:6443"
             verify_ssl: false
-            api_key: sha256~SAwCVe2EMluE-c4Mtt4mA55lY2SNVTzMIcH47o9fxBE
+            api_key: "{{ k8s_api_key }}"
 
         - name: Delete the NodePort service for the VM
           kubernetes.core.k8s:
@@ -104,7 +108,7 @@
             state: absent
             host: "https://api.hetzner.tntinfra.net:6443"
             verify_ssl: false
-            api_key: sha256~SAwCVe2EMluE-c4Mtt4mA55lY2SNVTzMIcH47o9fxBE
+            api_key: "{{ k8s_api_key }}"
 
         - name: Delete the namespace for the development environment
           kubernetes.core.k8s:
@@ -112,8 +116,7 @@
             state: absent
             host: "https://api.hetzner.tntinfra.net:6443"
             verify_ssl: false
-            api_key: sha256~SAwCVe2EMluE-c4Mtt4mA55lY2SNVTzMIcH47o9fxBE
-            # api_key: "{{ lookup('env', 'K8S_API_KEY') }}"
+            api_key: "{{ k8s_api_key }}"
 
     - name: Identify delete branch event
       ansible.builtin.debug:
