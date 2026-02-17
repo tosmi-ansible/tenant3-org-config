@@ -60,7 +60,7 @@
           ansible.builtin.debug:
             msg: "new branch: {{ awx_webhook_payload.ref }}"
 
-        - name: Create a new namspace for the development environment
+        - name: Create a new namespace for the development environment
           kubernetes.core.k8s:
             definition: "{{ lookup('template', '../templates/k8s-namespace.yaml.j2') }}"
             state: present
