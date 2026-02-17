@@ -44,7 +44,7 @@
         # We re-use the AAP API key credential type
         # This should be a separate credential type for Kubernetes API key in a real implementation
         #
-        k8s_api_key: "{{ lookup('env', 'AAP_API_KEY') }}"
+        k8s_api_key: "{{ lookup('env', 'AAP_API_TOKEN') }}"
 
     - name: Print the k8s_api_key for debugging purposes
       ansible.builtin.debug:
