@@ -2,8 +2,8 @@
 - name: Onboard new organizations
   hosts: "{{ aap_hostname | default('localhost') }}"
   connection: local
-  run_once: yes
-  gather_facts: no
+  run_once: true
+  gather_facts: false
   vars:
     # aap_api_token get created during onboarding
     # it's a custom credential an
