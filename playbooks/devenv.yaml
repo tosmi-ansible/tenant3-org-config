@@ -2,7 +2,7 @@
   hosts: localhost
   gather_facts: false
   vars:
-    tenant_name: "acme-corp"
+    tenant_name: "test"
     # awx_webhook_payload:
     #   before: "0000000000000000000000000000000000000000"
     #   after: "abcdef1234567890abcdef1234567890abcdef12"
@@ -117,11 +117,3 @@
             host: "https://api.hetzner.tntinfra.net:6443"
             verify_ssl: false
             api_key: "{{ k8s_api_key }}"
-
-    - name: Identify delete branch event
-      ansible.builtin.debug:
-        msg: "deleted branch: {{ awx_webhook_payload.ref }}"
-      when:
-        - awx_webhook_payload is defined
-        - awx_webhook_payload.after == "0000000000000000000000000000000000000000"
-        - awx_webhook_payload.deleted
