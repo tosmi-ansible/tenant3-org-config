@@ -1,5 +1,7 @@
 ---
 controller_templates:
+  # This should include the org-config job template
+  # if we use object_diff, it would be marked as missing otherwise...
   - name: "00-{{ tenant_name }}-example-job-template"
     organization: "{{ tenant_name }}"
     description: Prints Hello World
