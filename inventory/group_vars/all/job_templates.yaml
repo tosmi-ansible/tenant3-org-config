@@ -1,7 +1,55 @@
 ---
 controller_templates:
-  # This should include the org-config job template
-  # if we use object_diff, it would be marked as missing otherwise...
+  - name: "00-{{ tenant_name }}-org-config"
+    organization: "{{ tenant_name }}"
+    description: Apply organization configuration as code
+    job_type: run
+    inventory: "00-{{ tenant_name }}-org-config"
+    project: "00-{{ tenant_name }}-org-config"
+    playbook: playbooks/org-config.yaml
+    credentials:
+      - "00-{{ tenant_name }}-onboarding-vault"
+      - "00-{{ tenant_name }}-api-token"
+    extra_vars:
+      tenant_name: "{{ tenant_name }}"
+      github_credential: "00-{{ tenant_name }}-github"
+    labels:
+      - Onboarding
+      - Webhook
+    verbosity: 0
+
+  - name: "00-{{ tenant_name }}-devenv"
+    organization: "{{ tenant_name }}"
+    description: Create a development environment on branch creation
+    job_type: run
+    inventory: "00-{{ tenant_name }}-org-config"
+    project: "00-{{ tenant_name }}-org-config"
+    playbook: playbooks/devenv.yaml
+    credentials:
+      - "00-{{ tenant_name }}-k8s-token"
+    extra_vars:
+      tenant_name: "{{ tenant_name }}"
+    labels:
+      - Onboarding
+      - Webhook
+    verbosity: 1
+
+  - name: "00-{{ tenant_name }}-object-diff"
+    organization: "{{ tenant_name }}"
+    description: Display objects not managed by configuration as code
+    job_type: run
+    inventory: "00-{{ tenant_name }}-org-config"
+    project: "00-{{ tenant_name }}-org-config"
+    playbook: playbooks/cac-diff.yaml
+    credentials:
+      - "00-{{ tenant_name }}-onboarding-vault"
+      - "00-{{ tenant_name }}-api-token"
+    extra_vars:
+      tenant_name: "{{ tenant_name }}"
+    labels:
+      - Onboarding
+    verbosity: 1
+
   - name: "00-{{ tenant_name }}-example-job-template"
     organization: "{{ tenant_name }}"
     description: Prints Hello World
@@ -10,7 +58,10 @@ controller_templates:
     project: "00-{{ tenant_name }}-example-project"
     playbook: playbooks/hello-world.yaml
     verbosity: 2
-  - name: "00-{{ tenant_name }}-ping"
+    labels:
+      - Onboarding
+
+  - name: "00-tenant3-ping"
     organization: "{{ tenant_name }}"
     description: Ping hosts
     job_type: run
@@ -19,5 +70,5 @@ controller_templates:
     playbook: playbooks/ping.yaml
     ask_limit_on_launch: true
     verbosity: 2
-    credentials:
-      - "00-{{ tenant_name }}-dev-env-ssh-key"
+    labels:
+      - Onboarding

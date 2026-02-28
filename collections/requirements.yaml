@@ -21,7 +21,11 @@ collections:
     source: https://aap.apps.hub.aws.tntinfra.net/api/galaxy/content/rh-certified/
 
   - name: infra.aap_configuration
-    version: 4.2.1
+    version: 4.2.0
+    source: https://aap.apps.hub.aws.tntinfra.net/api/galaxy/content/validated/
+
+  - name: infra.aap_configuration_extended
+    version: 4.2.0
     source: https://aap.apps.hub.aws.tntinfra.net/api/galaxy/content/validated/
 
   - name: infra.aap_utilities

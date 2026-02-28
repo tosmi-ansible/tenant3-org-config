@@ -1,0 +1,37 @@
+- name: Display objects not managed by configuration as code
+  gather_facts: false
+  hosts: localhost
+  vars:
+    controller_configuration_object_diff_secure_logging: false
+    orgs: tenant3
+    aap_validate_certs: false
+
+  tasks:
+  pre_tasks:
+    - name: "Set the oauth token to be used since now"
+      ansible.builtin.set_fact:
+        aap_oauthtoken: "{{ aap_api_token }}"
+
+    - name: check version
+      ansible.builtin.set_fact:
+        aap_version: >-
+          {{
+          lookup(
+          'ansible.platform.gateway_api',
+          'api/gateway/v1/ping/',
+          host=aap_hostname,
+          oauth_token=aap_api_token,
+          verify_ssl=aap_validate_certs
+          ).version
+          }}
+
+  roles:
+    - role: infra.aap_configuration_extended.object_diff
+      vars:
+        controller_configuration_object_diff_tasks:
+          - {name: controller_job_templates, var: controller_templates, tags: controller_job_templates}
+
+  post_tasks:
+    - name: Print job templates not in configuration as code repository
+      ansible.builtin.debug:
+        var: controller_templates
