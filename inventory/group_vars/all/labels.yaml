@@ -2,7 +2,6 @@
 controller_labels:
   - name: Onboarding
     organization: "{{ tenant_name }}"
-    state: absent
 
   - name: Webhook
     organization: "{{ tenant_name }}"
