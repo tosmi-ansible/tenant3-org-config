@@ -1,0 +1,10 @@
+---
+- name: Verify naming conventions
+  when:
+    - item.name is not regex('\d{2}-.+')
+  ansible.builtin.fail:
+    msg: "{{ item.name }} does not meet naming conventions"
+  loop:
+    "{{ lookup('vars', __conventions_object) }}"
+  loop_control:
+    label: "{{ item.name }}"

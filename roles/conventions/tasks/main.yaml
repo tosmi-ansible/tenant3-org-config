@@ -1,0 +1,6 @@
+---
+- ansible.builtin.include_tasks: validate.yaml
+  loop:
+    "{{ conventions_objects }}"
+  loop_control:
+    loop_var: __conventions_object

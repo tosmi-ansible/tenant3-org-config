@@ -10,4 +10,5 @@
     aap_token: "{{ aap_api_token }}"
 
   roles:
+    - conventions
     - infra.aap_configuration.dispatch
