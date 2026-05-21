@@ -10,5 +10,5 @@
     aap_token: "{{ aap_api_token }}"
 
   roles:
-    - conventions
+    - tntinfra.conventions.verify
     - infra.aap_configuration.dispatch
